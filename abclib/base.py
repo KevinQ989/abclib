@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+
 class BaseSampler(ABC):
     """
     Abstract base class for all ABC samplers.
@@ -28,6 +29,7 @@ class BaseSampler(ABC):
         self.summary_statistic = summary_statistic
         self.distance = distance
     
+
     @abstractmethod
     def sample(self, s_obs, n_sample, **kwargs):
         """

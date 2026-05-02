@@ -22,7 +22,6 @@ class BaseSummaryStatistic(ABC):
     sampler, so statistics are interchangeable without modifying sampler
     code.
     """
-
     @abstractmethod
     def fit(self, thetas, simulations):
         """
@@ -46,6 +45,7 @@ class BaseSummaryStatistic(ABC):
             ``stat.fit(thetas, sims).transform(y_obs)``.
         """
         pass
+
 
     @abstractmethod
     def transform(self, simulation):
