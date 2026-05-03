@@ -24,6 +24,10 @@ class BaseSampler(ABC):
         the scalar distance between two summary vectors.
     """
     def __init__(self, prior, simulator, summary_statistic, distance):
+        if not getattr(summary_statistic, "_is_fitted", False):
+            raise ValueError(
+                "summary_statistic must be fitted before being passed to BaseSampler."
+            )
         self.prior = prior
         self.simulator = simulator
         self.summary_statistic = summary_statistic
@@ -31,7 +35,7 @@ class BaseSampler(ABC):
     
 
     @abstractmethod
-    def sample(self, s_obs, n_sample, **kwargs):
+    def sample(self, s_obs, n_simulations, **kwargs):
         """
         Draw samples from the ABC posterior.
 
@@ -39,8 +43,8 @@ class BaseSampler(ABC):
         ----------
         s_obs     : np.ndarray, shape (n_statistics,)
             Summary statistics computed from the observed data.
-        n_samples : int
-            Number of posterior samples to return.
+        n_simulations : int
+            Number of prior draws and simulator calls to make.
         
         Returns
         -------

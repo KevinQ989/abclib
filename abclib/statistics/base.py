@@ -22,6 +22,9 @@ class BaseSummaryStatistic(ABC):
     sampler, so statistics are interchangeable without modifying sampler
     code.
     """
+    def __init__(self):
+        self._is_fitted = False
+
     @abstractmethod
     def fit(self, thetas, simulations):
         """
@@ -44,7 +47,8 @@ class BaseSummaryStatistic(ABC):
             Returns the instance to allow method chaining, e.g.
             ``stat.fit(thetas, sims).transform(y_obs)``.
         """
-        pass
+        self._is_fitted = True
+        return self
 
 
     @abstractmethod
@@ -72,6 +76,8 @@ class BaseSummaryStatistic(ABC):
         RuntimeError
             If ``fit`` has not been called before ``transform``.
         """
+        if not self._is_fitted:
+            raise RuntimeError("fit must be called before transform.")
         pass
 
 
