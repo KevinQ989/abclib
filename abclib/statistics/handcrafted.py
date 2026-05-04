@@ -32,7 +32,7 @@ class HandCraftedSummary(BaseSummaryStatistic):
         """Apply all summary functions and concatenate into a vector."""
         parts = []
         for fn in self.functions.values():
-            part = np.at_least1d(np.asarray(fn(simulation), dtype=np.float64))
+            part = np.atleast_1d(np.asarray(fn(simulation), dtype=np.float64))
             parts.append(part)
         return np.concatenate(parts)
 
@@ -52,6 +52,12 @@ class HandCraftedSummary(BaseSummaryStatistic):
         -------
         self
             Returns the instance to allow method chaining.
+
+        Raises
+        ------
+        ValueError
+            If any summary function returns a non-numeric or inconsistent
+            length output across simulations.
         """
         raw = np.array([self._compute_raw(s) for s in simulations])
         self.scale_ = np.std(raw, axis=0, ddof=1)
