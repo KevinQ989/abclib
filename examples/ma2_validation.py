@@ -174,6 +174,14 @@ def main():
     # Regression Adjustment
     ############################################
 
+    prior_bounds = [(-1, 1), (-1, 1)]
+    reg_adj = abclib.RegressionAdjustment(prior_bounds)
+    reg_adj.fit(handcrafted_rejection_abc, s_obs_handcrafted)
+    regression_adjustment : ABCResult = reg_adj.adjust(
+        result = handcrafted_rejection_abc,
+        s_obs = s_obs_handcrafted
+    )
+    
     ############################################
     # Synthetic Likelihood
     ############################################
@@ -188,7 +196,7 @@ def main():
         "Rejection ABC (SA)":   semi_automatic_rejection_abc,
         # "SMC-ABC":            handcrafted_smc_abc,
         # "MCMC-ABC":           handcrafted_mcmc_abc,
-        # "Regression Adj.":    regression_adjustment_result,
+        "Regression Adj.":    regression_adjustment,
         # "Synthetic Likelihood": synthetic_likelihood_result
     }
 

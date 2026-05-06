@@ -36,6 +36,7 @@ class RejectionABC(BaseSampler):
         """
         thetas = []
         distances = []
+        summaries = []
 
         for _ in range(n_simulations):
             theta = self.prior()
@@ -44,9 +45,11 @@ class RejectionABC(BaseSampler):
 
             thetas.append(theta)
             distances.append(d)
+            summaries.append(s_sim)
         
         thetas = np.array(thetas)
         distances = np.array(distances)
+        summaries = np.array(summaries)
         epsilon = select_epsilon(distances, q)
         accepted_mask = distances <= epsilon
 
@@ -59,6 +62,7 @@ class RejectionABC(BaseSampler):
         return ABCResult(
             samples = thetas[accepted_mask],
             distances = distances[accepted_mask],
+            summaries = summaries[accepted_mask],
             n_simulations = n_simulations,
             epsilon = epsilon,
             summary_statistic = self.summary_statistic

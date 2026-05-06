@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 import numpy as np
 
 @dataclass
@@ -35,9 +34,10 @@ class ABCResult:
     """
     samples: np.ndarray
     distances: np.ndarray
+    summaries: np.ndarray
     n_simulations: int
     epsilon: float
-    summary_statistic: Optional[object] = field(default=None, repr=False)
+    summary_statistic: object
  
 
     @property
