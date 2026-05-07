@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Optional
 import numpy as np
 
 @dataclass
@@ -16,6 +17,8 @@ class ABCResult:
         Accepted parameter vectors forming the ABC posterior sample.
     distances         : np.ndarray, shape (n_samples,)
         Distance value for each accepted sample.
+    summaries         : np.ndarray, shape (n_samples, n_statistics)
+        Summary vectors of accepted samples.
     n_simulations     : int
         Total number of simulator calls made, including rejected draws.
     epsilon           : float
@@ -24,6 +27,8 @@ class ABCResult:
         The fitted summary statistic object used during inference.
         Stored so that downstream tools (e.g. PPC) can apply the same
         transformation to new simulations without re-fitting.
+    epsilons          : np.ndarray, shape (n_iterations,), optional
+        For sequential methods, the sequence of tolerances used across iterations.
  
     Properties
     ----------
@@ -38,6 +43,7 @@ class ABCResult:
     n_simulations: int
     epsilon: float
     summary_statistic: object
+    epsilons: Optional[np.ndarray] = field(default=None, repr=False)
  
 
     @property

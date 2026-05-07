@@ -25,7 +25,7 @@ class RejectionABC(BaseSampler):
         Returns
         -------
         ABCResult
-            Contains accepted samples, their distances, total simulator
+            Contains accepted samples, their distances, summaries, total simulator
             calls, and the threshold epsilon.
 
         Raises
