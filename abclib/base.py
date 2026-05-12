@@ -33,7 +33,7 @@ class BaseSampler(ABC):
     
 
     @abstractmethod
-    def sample(self, s_obs, n_simulations, **kwargs):
+    def sample(self, s_obs, **kwargs):
         """
         Draw samples from the ABC posterior.
 
@@ -41,8 +41,6 @@ class BaseSampler(ABC):
         ----------
         s_obs     : np.ndarray, shape (n_statistics,)
             Summary statistics computed from the observed data.
-        n_simulations : int
-            Number of prior draws and simulator calls to make.
         
         Returns
         -------
