@@ -1,5 +1,5 @@
-from .ppc import PosteriorPredictiveCheck
-from .sbc import SimulationBasedCalibration
-from .str import SyntheticTruthRecovery
+from .ppc import run_ppc
+from .sbc import run_sbc
+from .str import run_str
 
-__all__ = ["PosteriorPredictiveCheck", "SimulationBasedCalibration", "SyntheticTruthRecovery"]
+__all__ = ["run_ppc", "run_sbc", "run_str"]
