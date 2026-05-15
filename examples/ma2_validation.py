@@ -181,7 +181,7 @@ def main():
     handcrafted_mcmc_abc : ABCResult = abclib.MCMCABC(
         prior=prior, simulator=simulator,
         summary_statistic=handcrafted_summary, distance=euclidean,
-        prior_pdf=prior_pdf, proposal_std=0.1
+        prior_pdf=prior_pdf, proposal_std=0.3
     ).sample(s_obs_handcrafted, n_samples=10_000, epsilon=0.05)
     print(f"  Done. {len(handcrafted_mcmc_abc.samples)} chain states "
           f"(acc={handcrafted_mcmc_abc.acceptance_rate:.4f}).")
@@ -201,7 +201,7 @@ def main():
     ############################################
     # Synthetic Likelihood
     ############################################
-    print("\nRunning Synthetic Likelihood (this may take a while)...")
+    print("\nRunning Synthetic Likelihood...")
     synthetic_likelihood_result : SLResult = abclib.SyntheticLikelihood(
         prior=prior, simulator=simulator,
         summary_statistic=handcrafted_summary,
@@ -214,7 +214,7 @@ def main():
     ############################################
     # Exact posterior and results
     ############################################
-    print("\nComputing exact posterior grid (this may take a while)...")
+    print("\nComputing exact posterior grid...")
     exact_grid = exact_posterior_grid(observed_data, n_grid=200)
     print("  Done.")
 
@@ -252,30 +252,68 @@ def main():
           f"t_obs: {ppc_var['t_obs']:.4f} | "
           f"t_rep mean: {np.mean(ppc_var['t_rep']):.4f}")
 
-    print("\nRunning SBC (100 trials, this will be slow)...")
+    print("\nRunning SBC on rejection result...")
     sbc_result = abclib.run_sbc(
         sampler=abclib.RejectionABC(
             prior=prior, simulator=simulator,
             summary_statistic=handcrafted_summary, distance=euclidean
         ),
         simulator=simulator, prior=prior,
-        n_trials=100, L=100,
+        n_trials=500, L=100,
         summary_statistic=handcrafted_summary,
-        n_simulations=2000, q=0.05
+        n_simulations=10_000, q=0.05
     )
     print(f"  Done. KS p-values per parameter: {sbc_result['ks_pvalue'].round(3)}")
     abclib.plot_rank_histogram(sbc_result, n_bins=20, output_dir=OUTPUT_DIR)
 
-    print("\nRunning STR (3 grid points)...")
+    print("\nRunning SBC on regression-adjusted result...")
+    class AdjustedSampler:
+        """Rejection ABC followed by regression adjustment."""
+        def __init__(self, base_sampler, prior_bounds, s_obs):
+            self.base_sampler = base_sampler
+            self.adj = abclib.RegressionAdjustment(prior_bounds)
+            self.s_obs = s_obs
+
+        def sample(self, s_obs, **kwargs):
+            result = self.base_sampler.sample(s_obs, **kwargs)
+            self.adj.fit(result, s_obs)
+            return self.adj.adjust(result, s_obs)
+
+    adjusted_sampler = AdjustedSampler(
+        base_sampler=abclib.RejectionABC(
+            prior=prior, simulator=simulator,
+            summary_statistic=handcrafted_summary, distance=euclidean
+        ),
+        prior_bounds=[(-1, 1), (-1, 1)],
+        s_obs=s_obs_handcrafted
+    )
+
+    sbc_adjusted = abclib.run_sbc(
+        sampler=adjusted_sampler,
+        simulator=simulator, prior=prior,
+        n_trials=500, L=100,
+        summary_statistic=handcrafted_summary,
+        n_simulations=10_000, q=0.05
+    )
+    print(f"  Done. KS p-values per parameter: {sbc_adjusted['ks_pvalue'].round(3)}")
+    abclib.plot_rank_histogram(sbc_adjusted, n_bins=20, output_dir=OUTPUT_DIR)
+
+    print("\nRunning STR...")
+    theta_grid = np.array([
+        [t1, t2]
+        for t1 in np.linspace(-0.8, 0.8, 6)
+        for t2 in np.linspace(-0.8, 0.8, 6)
+        if t1 + t2 < 1 and t2 - t1 < 1 and abs(t2) < 1
+    ])
     str_result = abclib.run_str(
         sampler=abclib.RejectionABC(
             prior=prior, simulator=simulator,
             summary_statistic=handcrafted_summary, distance=euclidean
         ),
         simulator=simulator,
-        theta_grid=np.array([[0.6, 0.2], [0.5, 0.1], [0.7, 0.3]]),
+        theta_grid=np.array(theta_grid),
         summary_statistic=handcrafted_summary,
-        credible_mass=0.90, n_simulations=2000, q=0.05
+        credible_mass=0.90, n_simulations=10_000, q=0.05
     )
     print(f"  Done. Coverage per parameter: {str_result['coverage'].round(3)}")
     abclib.plot_str_results(str_result, output_dir=OUTPUT_DIR)
