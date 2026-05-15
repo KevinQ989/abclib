@@ -24,6 +24,48 @@ def prior():
         theta2 = np.random.uniform(-1, 1)
         if theta1 + theta2 < 1 and theta2 - theta1 < 1 and abs(theta2) < 1:
             return np.array([theta1, theta2])
+        
+
+def prior_pdf(theta):
+    """
+    Evaluate the uniform prior density over the MA(2) invertibility region.
+
+    Parameters
+    ----------
+    theta : np.ndarray, shape (2,)
+        Parameter vector [theta1, theta2].
+
+    Returns
+    -------
+    float
+        Prior density at the given theta. Returns 0 if theta is outside
+        the invertibility region.
+    """
+    theta1, theta2 = theta
+    if theta1 + theta2 < 1 and theta2 - theta1 < 1 and abs(theta2) < 1:
+        return 0.25
+    else:
+        return 0.0
+    
+
+def prior_density(thetas):
+    """
+    Vectorised version of prior_pdf for evaluating multiple thetas at once.
+
+    Parameters
+    ----------
+    thetas : np.ndarray, shape (n_thetas, 2)
+        Array of parameter vectors to evaluate.
+
+    Returns
+    -------
+    np.ndarray, shape (n_thetas,)
+        Prior densities for each input theta.
+    """
+    densities = np.zeros(thetas.shape[0])
+    for i, theta in enumerate(thetas):
+        densities[i] = prior_pdf(theta)
+    return densities
 
 
 def simulator(theta, T=100):

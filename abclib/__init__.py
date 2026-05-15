@@ -24,15 +24,16 @@ Post Processing
 
 Diagnostics
 -------------------
-- PosteriorPredictiveCheck: Assess model fit using posterior predictive checks.
-- SimulationBasedCalibration: Evaluate the calibration of ABC posteriors.
-- SyntheticTruthRecovery: Test the ability of ABC to recover known parameters.
+- run_ppc: Assess model fit using posterior predictive checks.
+- run_sbc: Evaluate the calibration of ABC posteriors.
+- run_str: Test the ability of ABC to recover known parameters.
 """
 
 from .samplers import RejectionABC, SMCABC, MCMCABC
 from .statistics import HandCraftedSummary, SemiAutomaticSummary
 from .postprocessing import RegressionAdjustment
-from .diagnostics import PosteriorPredictiveCheck, SimulationBasedCalibration, SyntheticTruthRecovery
+from .diagnostics import run_ppc, run_sbc, run_str
+
 
 __all__ = [
     "RejectionABC",
@@ -41,9 +42,9 @@ __all__ = [
     "HandCraftedSummary",
     "SemiAutomaticSummary",
     "RegressionAdjustment",
-    "PosteriorPredictiveCheck",
-    "SimulationBasedCalibration",
-    "SyntheticTruthRecovery",
+    "run_ppc",
+    "run_sbc",
+    "run_str",
 ]
 
 __version__ = "0.1.0"
