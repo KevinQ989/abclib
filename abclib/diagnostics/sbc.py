@@ -98,7 +98,7 @@ def run_sbc(sampler, simulator, prior, n_trials, L, summary_statistic, **sampler
     }
 
 
-def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None):
+def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None, filename="sbc_rank_histogram.png"):
     """
     Plot rank histogram for each parameter dimension.
 
@@ -114,14 +114,22 @@ def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None):
         Number of bins for the histogram. Default is 20.
     output_dir : str, optional
         If provided, saves the plot to this directory instead of showing it.
+    filename   : str, optional
+        The filename to use when saving the plot. Default is "sbc_rank_histogram.png
     """
     n_params = sbc_result["ranks"].shape[1]
-    for i in range(n_params):
-        plt.figure()
-        plt.hist(sbc_result["ranks"][:, i], bins=n_bins, density=True, alpha=0.7)
-        plt.title(f"Parameter {i} Rank Histogram (KS p={sbc_result['ks_pvalue'][i]:.3f})")
-        plt.xlabel("Rank of True Parameter")
-        plt.ylabel("Density")
-        path = output_dir or "."
-        plt.savefig(os.path.join(path, f"sbc_rank_histogram_param{i}.png"), dpi=150, bbox_inches='tight')
-        plt.close()
+    fig, axes = plt.subplots(n_params, 1, figsize=(8, 5 * n_params))
+    if n_params == 1:
+        axes = [axes]
+
+    for i, ax in enumerate(axes):
+        ax.hist(sbc_result["ranks"][:, i], bins=n_bins, density=True, alpha=0.7)
+        ax.set_title(f"Parameter {i} Rank Histogram (KS p={sbc_result['ks_pvalue'][i]:.3f})")
+        ax.set_xlabel("Rank of True Parameter")
+        ax.set_ylabel("Density")
+
+    plt.tight_layout()
+    path = output_dir or "."
+    plt.savefig(os.path.join(path, filename), dpi=150, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved SBC rank histogram to {os.path.join(path, filename)}")

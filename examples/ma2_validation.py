@@ -67,31 +67,37 @@ def plot_results(results_dict, exact_grid, true_theta):
         True parameter vector to mark on each plot.
     """
     T1, T2, prob = exact_grid
-    n_methods = len(results_dict)
-    fig, axes = plt.subplots(1, n_methods, figsize=(5 * n_methods, 4))
+    methods = list(results_dict.items())
+    n_methods = len(methods)
 
-    if n_methods == 1:
-        axes = [axes]
+    n_cols = 3
+    n_rows = int(np.ceil(n_methods / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 4 * n_rows))
+    axes = axes.flatten()
 
-    for ax, (label, result) in zip(axes, results_dict.items()):
-        ax.contour(T1, T2, prob, levels=10, cmap='Blues')
+    for idx, (label, result) in enumerate(methods):
+        ax = axes[idx]
+        ax.contour(T1, T2, prob, levels=10, cmap="Blues")
         ax.scatter(
             result.samples[:, 0], result.samples[:, 1],
-            alpha=0.2, s=5, color='orange', label='ABC samples'
+            alpha=0.2, s=5, color="orange", label="ABC samples"
         )
         ax.scatter(
             true_theta[0], true_theta[1],
-            color='red', marker='+', s=150, zorder=5, label='True θ'
+            color="red", marker="+", s=150, zorder=5, label="True θ"
         )
         ax.set_title(f"{label}\nacc={result.acceptance_rate:.4f}")
-        ax.set_xlabel('θ₁')
-        ax.set_ylabel('θ₂')
+        ax.set_xlabel("θ₁")
+        ax.set_ylabel("θ₂")
         ax.legend(fontsize=7)
 
+    for idx in range(n_methods, len(axes)):
+        axes[idx].set_visible(False)
+
     plt.tight_layout()
-    plt.savefig(os.path.join(OUTPUT_DIR, "posterior_comparison.png"), dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(OUTPUT_DIR, "ma2_posterior_comparison.png"),dpi=150, bbox_inches="tight")
     plt.close()
-    print("  Saved posterior_comparison.png")
+    print(f"  Saved posterior comparison to {os.path.join(OUTPUT_DIR, "ma2_posterior_comparison.png")}")
 
 
 def print_result(results_dict):
@@ -251,7 +257,7 @@ def main():
     print(f"  p-value: {ppc_var['p_value']:.3f} | "
           f"t_obs: {ppc_var['t_obs']:.4f} | "
           f"t_rep mean: {np.mean(ppc_var['t_rep']):.4f}")
-
+    
     print("\nRunning SBC on rejection result...")
     sbc_result = abclib.run_sbc(
         sampler=abclib.RejectionABC(
@@ -264,7 +270,7 @@ def main():
         n_simulations=10_000, q=0.05
     )
     print(f"  Done. KS p-values per parameter: {sbc_result['ks_pvalue'].round(3)}")
-    abclib.plot_rank_histogram(sbc_result, n_bins=20, output_dir=OUTPUT_DIR)
+    abclib.plot_rank_histogram(sbc_result, n_bins=20, output_dir=OUTPUT_DIR, filename="ma2_sbc_rank_histogram_rejection.png")
 
     print("\nRunning SBC on regression-adjusted result...")
     class AdjustedSampler:
@@ -288,15 +294,15 @@ def main():
         s_obs=s_obs_handcrafted
     )
 
-    sbc_adjusted = abclib.run_sbc(
+    sbc_result = abclib.run_sbc(
         sampler=adjusted_sampler,
         simulator=simulator, prior=prior,
         n_trials=500, L=100,
         summary_statistic=handcrafted_summary,
         n_simulations=10_000, q=0.05
     )
-    print(f"  Done. KS p-values per parameter: {sbc_adjusted['ks_pvalue'].round(3)}")
-    abclib.plot_rank_histogram(sbc_adjusted, n_bins=20, output_dir=OUTPUT_DIR)
+    print(f"  Done. KS p-values per parameter: {sbc_result['ks_pvalue'].round(3)}")
+    abclib.plot_rank_histogram(sbc_result, n_bins=20, output_dir=OUTPUT_DIR, filename="ma2_sbc_rank_histogram_reg_adj.png")
 
     print("\nRunning STR...")
     theta_grid = np.array([
@@ -316,7 +322,7 @@ def main():
         credible_mass=0.90, n_simulations=10_000, q=0.05
     )
     print(f"  Done. Coverage per parameter: {str_result['coverage'].round(3)}")
-    abclib.plot_str_results(str_result, output_dir=OUTPUT_DIR)
+    abclib.plot_str_results(str_result, output_dir=OUTPUT_DIR, filename="ma2_str_results.png")
 
     print("\nDone.")
 

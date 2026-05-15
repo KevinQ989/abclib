@@ -72,7 +72,7 @@ def run_str(sampler, simulator, theta_grid, summary_statistic, credible_mass=0.9
     }
 
 
-def plot_str_results(str_results, output_dir=None):
+def plot_str_results(str_results, output_dir=None, filename="str_results.png"):
     """
     Plot the results of synthetic truth recovery.
 
@@ -82,22 +82,33 @@ def plot_str_results(str_results, output_dir=None):
         Output from the ``run_str`` function containing "theta_grid", "covered", "lower", and "upper".
     output_dir : str, optional
         If provided, saves the plot to this directory instead of showing it.
+    filename   : str, optional
+        The filename to use when saving the plot. Default is "str_results.png".
     """
     n_params = str_results["theta_grid"].shape[1] if str_results["theta_grid"].ndim > 1 else 1
-    for j in range(n_params):
-        plt.figure(figsize=(8, 5))
+    fig, axes = plt.subplots(n_params, 1, figsize=(8, 5 * n_params))
+    if n_params == 1:
+        axes = [axes]
+
+    for j, ax in enumerate(axes):
         for i, theta_star in enumerate(str_results["theta_grid"][:, j]):
             color = "green" if str_results["covered"][i, j] else "red"
-            plt.vlines(theta_star, str_results["lower"][i, j], 
-                    str_results["upper"][i, j], color=color, alpha=0.5)
-            plt.scatter(theta_star, theta_star, color="black", s=10, zorder=5)
-        plt.plot([], [], color="green", label="Covered")
-        plt.plot([], [], color="red", label="Not covered")
-        plt.xlabel(f"True $\\theta_{j}$")
-        plt.ylabel(f"Credible interval for $\\theta_{j}$")
-        plt.title(f"STR — Parameter {j} | Coverage: {str_results['coverage'][j]:.2f}")
-        plt.legend()
-        plt.tight_layout()
-        path = output_dir or "."
-        plt.savefig(os.path.join(path, f"str_param{j}.png"), dpi=150, bbox_inches='tight')
-        plt.close()
+            ax.vlines(
+                theta_star,
+                str_results["lower"][i, j], 
+                str_results["upper"][i, j],
+                color=color, alpha=0.5
+            )
+            ax.scatter(theta_star, theta_star, color="black", s=10, zorder=5)
+        ax.plot([], [], color="green", label="Covered")
+        ax.plot([], [], color="red", label="Not covered")
+        ax.set_xlabel(f"True $\\theta_{j}$")
+        ax.set_ylabel(f"Credible interval for $\\theta_{j}$")
+        ax.set_title(f"STR — Parameter {j} | Coverage: {str_results['coverage'][j]:.2f}")
+        ax.legend()
+    
+    plt.tight_layout()
+    path = output_dir or "."
+    plt.savefig(os.path.join(path, filename), dpi=150, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved STR plot to {os.path.join(path, filename)}")
