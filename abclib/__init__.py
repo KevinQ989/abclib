@@ -32,7 +32,8 @@ Diagnostics
 from .samplers import RejectionABC, SMCABC, MCMCABC
 from .statistics import HandCraftedSummary, SemiAutomaticSummary
 from .postprocessing import RegressionAdjustment
-from .diagnostics import run_ppc, run_sbc, run_str
+from .synthetic_likelihood import SyntheticLikelihood
+from .diagnostics import run_ppc, run_sbc, run_str, plot_rank_histogram, plot_str_results
 
 
 __all__ = [
@@ -42,9 +43,12 @@ __all__ = [
     "HandCraftedSummary",
     "SemiAutomaticSummary",
     "RegressionAdjustment",
+    "SyntheticLikelihood",
     "run_ppc",
     "run_sbc",
     "run_str",
+    "plot_rank_histogram",
+    "plot_str_results"
 ]
 
 __version__ = "0.1.0"

@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
@@ -97,7 +98,7 @@ def run_sbc(sampler, simulator, prior, n_trials, L, summary_statistic, **sampler
     }
 
 
-def plot_rank_histogram(sbc_result, n_bins=20):
+def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None):
     """
     Plot rank histogram for each parameter dimension.
 
@@ -111,6 +112,8 @@ def plot_rank_histogram(sbc_result, n_bins=20):
         Output from run_sbc containing "ranks" and "ks_pvalue".
     n_bins     : int, optional
         Number of bins for the histogram. Default is 20.
+    output_dir : str, optional
+        If provided, saves the plot to this directory instead of showing it.
     """
     n_params = sbc_result["ranks"].shape[1]
     for i in range(n_params):
@@ -119,4 +122,6 @@ def plot_rank_histogram(sbc_result, n_bins=20):
         plt.title(f"Parameter {i} Rank Histogram (KS p={sbc_result['ks_pvalue'][i]:.3f})")
         plt.xlabel("Rank of True Parameter")
         plt.ylabel("Density")
-        plt.show()
+        path = output_dir or "."
+        plt.savefig(os.path.join(path, f"sbc_rank_histogram_param{i}.png"), dpi=150, bbox_inches='tight')
+        plt.close()

@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -71,7 +72,7 @@ def run_str(sampler, simulator, theta_grid, summary_statistic, credible_mass=0.9
     }
 
 
-def plot_str_results(str_results):
+def plot_str_results(str_results, output_dir=None):
     """
     Plot the results of synthetic truth recovery.
 
@@ -79,6 +80,8 @@ def plot_str_results(str_results):
     ----------
     str_results : dict
         Output from the ``run_str`` function containing "theta_grid", "covered", "lower", and "upper".
+    output_dir : str, optional
+        If provided, saves the plot to this directory instead of showing it.
     """
     n_params = str_results["theta_grid"].shape[1] if str_results["theta_grid"].ndim > 1 else 1
     for j in range(n_params):
@@ -95,4 +98,6 @@ def plot_str_results(str_results):
         plt.title(f"STR — Parameter {j} | Coverage: {str_results['coverage'][j]:.2f}")
         plt.legend()
         plt.tight_layout()
-        plt.show()
+        path = output_dir or "."
+        plt.savefig(os.path.join(path, f"str_param{j}.png"), dpi=150, bbox_inches='tight')
+        plt.close()

@@ -2,11 +2,14 @@ from .ma2_model import prior, prior_pdf, prior_density, simulator, SUMMARY_FUNCT
 from abclib.utils import run_pilot
 from abclib.distance import euclidean
 from abclib.results import ABCResult, SLResult
+import os
 import abclib
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "plots")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def exact_posterior_grid(y, n_grid=200):
     """
@@ -86,7 +89,9 @@ def plot_results(results_dict, exact_grid, true_theta):
         ax.legend(fontsize=7)
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig(os.path.join(OUTPUT_DIR, "posterior_comparison.png"), dpi=150, bbox_inches='tight')
+    plt.close()
+    print("  Saved posterior_comparison.png")
 
 
 def print_result(results_dict):
@@ -254,12 +259,12 @@ def main():
             summary_statistic=handcrafted_summary, distance=euclidean
         ),
         simulator=simulator, prior=prior,
-        n_trials=100, L=200,
+        n_trials=100, L=100,
         summary_statistic=handcrafted_summary,
         n_simulations=2000, q=0.05
     )
     print(f"  Done. KS p-values per parameter: {sbc_result['ks_pvalue'].round(3)}")
-    abclib.plot_rank_histogram(sbc_result, n_bins=20)
+    abclib.plot_rank_histogram(sbc_result, n_bins=20, output_dir=OUTPUT_DIR)
 
     print("\nRunning STR (3 grid points)...")
     str_result = abclib.run_str(
@@ -273,7 +278,7 @@ def main():
         credible_mass=0.90, n_simulations=2000, q=0.05
     )
     print(f"  Done. Coverage per parameter: {str_result['coverage'].round(3)}")
-    abclib.plot_str_results(str_result)
+    abclib.plot_str_results(str_result, output_dir=OUTPUT_DIR)
 
     print("\nDone.")
 
