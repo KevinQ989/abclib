@@ -162,8 +162,8 @@ class LotkaVolterra(Model):
         for t in range(self.T):
             dx = (alpha * x - beta * x * y) * self.dt
             dy = (delta * x * y - gamma * y) * self.dt
-            x = max(x + dx, 1e-6)
-            y = max(y + dy, 1e-6)
+            x = np.clip(x + dx, 1e-6, 1e6)
+            y = np.clip(y + dy, 1e-6, 1e6)
             observations[t, 0] = x * np.exp(np.random.normal(0, self.sigma))
             observations[t, 1] = y * np.exp(np.random.normal(0, self.sigma))
 

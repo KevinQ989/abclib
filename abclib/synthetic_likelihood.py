@@ -109,8 +109,12 @@ class SyntheticLikelihood:
         summaries = np.array([self.summary_statistic.transform(self.simulator(theta)) for _ in range(M)])
         if summaries.ndim == 1:
             summaries = summaries[:, np.newaxis]
+        if not np.all(np.isfinite(summaries)):
+            return 0.0
         mean_sim = np.mean(summaries, axis=0)
         cov_sim = np.cov(summaries, rowvar=False) + 1e-6 * np.eye(len(mean_sim))
+        if not np.all(np.isfinite(cov_sim)):
+            return 0.0
         return stats.multivariate_normal.pdf(s_obs, mean=mean_sim, cov=cov_sim)
 
     

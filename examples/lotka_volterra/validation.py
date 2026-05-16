@@ -1,0 +1,44 @@
+from .model import LotkaVolterra
+from ..validation import run_validation
+from ..config import Config, RejectionConfig, SMCConfig, MCMCConfig, SyntheticLikelihoodConfig
+import numpy as np
+import os
+
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__))
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+def main():
+    np.random.seed(0)
+    model = LotkaVolterra(T=100)
+    true_theta = np.array([0.5, 0.1, 0.1, 0.5])
+    observed_data = model.simulator(true_theta)
+
+    config = Config(
+        methods = ["rejection_sa", "smc", "mcmc", "synthetic_likelihood"],
+        n_pilot = 2_000,
+        output_dir = OUTPUT_DIR,
+        rejection = RejectionConfig(
+            n_simulations=10_000, q=0.05
+        ),
+        smc = SMCConfig(
+            M=10_000, T=5, q=0.05
+        ),
+        mcmc = MCMCConfig(
+            n_samples=10_000, epsilon=0.05, proposal_std=0.3
+        ),
+        synthetic_likelihood=SyntheticLikelihoodConfig(
+            n_simulations=10_000, M=100, proposal_std=0.1
+        ),
+    )
+
+    results = run_validation(
+        model = model,
+        config = config,
+        true_theta = true_theta,
+        observed_data = observed_data
+    )
+
+
+if __name__ == "__main__":
+    main()

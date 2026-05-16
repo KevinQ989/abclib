@@ -163,7 +163,6 @@ def run_validation(
     ValidationResult
         Contains all ABCResult/SLResult objects and diagnostic outputs.
     """
-    np.random.seed(config.seed)
     os.makedirs(config.output_dir, exist_ok=True)
     prefix = model.name.lower().replace(" ", "_").replace("(", "").replace(")", "")
     results = {}

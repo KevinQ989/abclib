@@ -8,6 +8,7 @@ import os
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__))
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 def exact_posterior_grid(model, y, n_grid=200):
     """
     Evaluate the exact MA(2) posterior on a grid over the invertibility region.
