@@ -1,11 +1,11 @@
-from .ma2_model import MA2
-from .validation import run_validation
-from .config import Config, RejectionConfig, SMCConfig, MCMCConfig, SyntheticLikelihoodConfig
+from .model import MA2
+from ..validation import run_validation
+from ..config import Config, RejectionConfig, SMCConfig, MCMCConfig, SyntheticLikelihoodConfig
 import numpy as np
 import scipy.stats as stats
 import os
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "plots")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__))
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def exact_posterior_grid(model, y, n_grid=200):

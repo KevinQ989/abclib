@@ -6,7 +6,7 @@ for a second-order moving average model with known exact posterior.
 Used to validate every abclib method before application to the
 Lotka-Volterra case study.
 """
-from .model import Model
+from ..model import Model
 import numpy as np
 import scipy.linalg as la
 

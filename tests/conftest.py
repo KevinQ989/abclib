@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from examples.ma2_model import prior, simulator, SUMMARY_FUNCTIONS
+from examples.ma2.model import prior, simulator, SUMMARY_FUNCTIONS
 from abclib.statistics.handcrafted import HandCraftedSummary
 from abclib.utils import run_pilot
 from abclib.distance import euclidean

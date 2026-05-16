@@ -6,7 +6,7 @@ observation noise, and summary statistic functions for a four-parameter
 predator-prey model. Used as the primary intractable case study in the
 abclib validation pipeline.
 """
-from .model import Model
+from ..model import Model
 import numpy as np
 
 

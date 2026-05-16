@@ -89,7 +89,7 @@ def _print_results(results: dict):
 
 
 def _plot_results(results: dict, true_theta: np.ndarray,
-                  output_dir: str, model_name: str,
+                  output_dir: str, prefix: str,
                   exact_grid: Optional[tuple] = None):
     """Plot posterior samples in a grid, overlaid on exact contours if provided."""
     methods = list(results.items())
@@ -121,7 +121,7 @@ def _plot_results(results: dict, true_theta: np.ndarray,
         axes[idx].set_visible(False)
 
     plt.tight_layout()
-    filename = f"{model_name.lower().replace(' ', '_')}_posterior_comparison.png"
+    filename = f"{prefix}_posterior_comparison.png"
     path = os.path.join(output_dir, filename)
     plt.savefig(path, dpi=150, bbox_inches="tight")
     plt.close()
@@ -208,16 +208,6 @@ def run_validation(
           f"(acc={rejection_hc.acceptance_rate:.4f}).")
 
     # ------------------------------------------------------------------
-    # Baseline: Regression Adjustment
-    # ------------------------------------------------------------------
-    print("\nRunning Regression Adjustment [baseline]...")
-    reg_adj = abclib.RegressionAdjustment(model.prior_bounds)
-    reg_adj.fit(rejection_hc, s_obs_hc)
-    regression_adj = reg_adj.adjust(rejection_hc, s_obs_hc)
-    results["regression_adj"] = regression_adj
-    print(f"  Done. Adjusted {len(regression_adj.samples)} samples.")
-
-    # ------------------------------------------------------------------
     # Optional: Rejection ABC (Semi-Automatic)
     # ------------------------------------------------------------------
     if "rejection_sa" in config.methods:
@@ -235,6 +225,16 @@ def run_validation(
         results["rejection_sa"] = rejection_sa
         print(f"  Done. Accepted {len(rejection_sa.samples)} samples "
               f"(acc={rejection_sa.acceptance_rate:.4f}).")
+
+    # ------------------------------------------------------------------
+    # Baseline: Regression Adjustment
+    # ------------------------------------------------------------------
+    print("\nRunning Regression Adjustment [baseline]...")
+    reg_adj = abclib.RegressionAdjustment(model.prior_bounds)
+    reg_adj.fit(rejection_hc, s_obs_hc)
+    regression_adj = reg_adj.adjust(rejection_hc, s_obs_hc)
+    results["regression_adj"] = regression_adj
+    print(f"  Done. Adjusted {len(regression_adj.samples)} samples.")
 
     # ------------------------------------------------------------------
     # Optional: SMC-ABC
@@ -307,7 +307,7 @@ def run_validation(
         results=results,
         true_theta=true_theta,
         output_dir=config.output_dir,
-        model_name=model.name,
+        prefix=prefix,
         exact_grid=exact_grid
     )
 

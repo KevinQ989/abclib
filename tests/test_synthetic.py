@@ -66,7 +66,7 @@ def test_larger_M_reduces_likelihood_variance(ma2_components):
 
 def test_unfitted_stat_raises():
     """Passing an unfitted summary statistic should raise ValueError."""
-    from examples.ma2_model import prior, simulator, SUMMARY_FUNCTIONS
+    from examples.ma2.model import prior, simulator, SUMMARY_FUNCTIONS
     from abclib.statistics.handcrafted import HandCraftedSummary
     stat = HandCraftedSummary(SUMMARY_FUNCTIONS)
     with pytest.raises(ValueError):
