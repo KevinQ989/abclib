@@ -156,8 +156,6 @@ class Config:
     n_pilot : int
         Number of pilot simulations for fitting summary statistics.
         Default is 2,000.
-    seed : int
-        Random seed for reproducibility. Default is 0.
     output_dir : str
         Directory to save plots. Default is 'plots'.
     rejection : RejectionConfig
@@ -178,7 +176,6 @@ class Config:
     """
     methods: List[str] = field(default_factory=list)
     n_pilot: int = 2_000
-    seed: int = 0
     output_dir: str = "plots"
     rejection: RejectionConfig = field(default_factory=RejectionConfig)
     smc: SMCConfig = field(default_factory=SMCConfig)

@@ -14,6 +14,9 @@ def exact_posterior_grid(model, y, n_grid=200):
 
     Parameters
     ----------
+    model : MA2
+        Fitted MA2 model instance. Uses model.autocovariance and
+        model.prior_pdf for grid evaluation.
     y : np.ndarray, shape (T,)
         Observed time series.
     n_grid : int, optional
@@ -36,9 +39,7 @@ def exact_posterior_grid(model, y, n_grid=200):
     for i in range(n_grid):
         for j in range(n_grid):
             theta = np.array([T1[i, j], T2[i, j]])
-            if (theta[0] + theta[1] < 1
-                    and theta[1] - theta[0] < 1
-                    and abs(theta[1]) < 1):
+            if model.prior_pdf(theta) > 0:
                 Sigma = model.autocovariance(theta)
                 log_prob[i, j] = stats.multivariate_normal.logpdf(
                     y, mean=np.zeros(len(y)), cov=Sigma
@@ -51,6 +52,7 @@ def exact_posterior_grid(model, y, n_grid=200):
 
 
 def main():
+    np.random.seed(0)
     model = MA2(T=100)
     true_theta = np.array([0.6, 0.2])
     observed_data = model.simulator(true_theta)
@@ -58,7 +60,6 @@ def main():
     config = Config(
         methods = ["rejection_sa", "smc", "mcmc", "synthetic_likelihood"],
         n_pilot = 2_000,
-        seed = 0,
         output_dir = OUTPUT_DIR,
         rejection = RejectionConfig(
             n_simulations=10_000, q=0.05

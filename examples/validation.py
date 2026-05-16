@@ -400,13 +400,13 @@ def run_validation(
     print("\nRunning STR...")
     bounds = model.prior_bounds
     axes_grids = [
-        np.linspace(lo, hi, config.str_.n_grid_points)
+        np.linspace(lo + (hi - lo) * 0.1, hi - (hi - lo) * 0.1, config.str_.n_grid_points)
         for lo, hi in bounds
     ]
     mesh = np.array(np.meshgrid(*axes_grids)).T.reshape(-1, len(bounds))
     theta_grid = np.array([
         theta for theta in mesh
-        if model.prior_pdf(theta) > 0
+        if model.prior_pdf(theta) > 1e-6
     ])
     str_result = run_str(
         sampler=abclib.RejectionABC(
