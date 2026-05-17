@@ -37,10 +37,10 @@ def main():
             n_samples=10_000, epsilon=1.0, proposal_std=0.05
         ),
         synthetic_likelihood=SyntheticLikelihoodConfig(
-            n_simulations=2_000, M=200, proposal_std=0.005
+            n_simulations=2_000, M=200, proposal_std=0.001
         ),
         sbc=SBCConfig(
-            n_trials=500, L=100
+            n_trials=200, L=100
         ),
         ppc=PPCConfig(
             n_samples=1000

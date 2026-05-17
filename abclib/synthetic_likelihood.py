@@ -164,4 +164,6 @@ class SyntheticLikelihood:
             self.prior_pdf(theta_current) + 1e-300
         )
         log_alpha = log_likelihood_proposed + log_prior_ratio - log_likelihood_current
+        if log_alpha >= 0:
+            return 1.0
         return float(min(1, np.exp(log_alpha)))

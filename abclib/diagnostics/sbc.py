@@ -98,7 +98,8 @@ def run_sbc(sampler, simulator, prior, n_trials, L, summary_statistic, **sampler
     }
 
 
-def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None, filename="sbc_rank_histogram.png"):
+def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None,
+        filename="sbc_rank_histogram.png", parameter_names=None):
     """
     Plot rank histogram for each parameter dimension.
 
@@ -116,20 +117,36 @@ def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None, filename="sbc_ra
         If provided, saves the plot to this directory instead of showing it.
     filename   : str, optional
         The filename to use when saving the plot. Default is "sbc_rank_histogram.png
+    parameter_names : list of str, optional
+        Names of the parameters to use in plot titles. If None, parameters will be labeled by index.
     """
-    n_params = sbc_result["ranks"].shape[1]
-    fig, axes = plt.subplots(n_params, 1, figsize=(8, 5 * n_params))
-    if n_params == 1:
-        axes = [axes]
+    ranks = sbc_result["ranks"]
+    ks_pvalue = sbc_result["ks_pvalue"]
+    n_params = ranks.shape[1]
 
-    for i, ax in enumerate(axes):
-        ax.hist(sbc_result["ranks"][:, i], bins=n_bins, density=True, alpha=0.7)
-        ax.set_title(f"Parameter {i} Rank Histogram (KS p={sbc_result['ks_pvalue'][i]:.3f})")
+    if parameter_names is None:
+        parameter_names = [f"Parameter {i}" for i in range(n_params)]
+
+    n_cols = 2
+    n_rows = int(np.ceil(n_params / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(10, 4 * n_rows))
+    axes = np.array(axes).flatten()
+
+    for i in range(n_params):
+        ax = axes[i]
+        ax.hist(ranks[:, i], bins=n_bins, density=True, alpha=0.7)
+        ax.set_title(
+            f"{parameter_names[i]} (KS p={ks_pvalue[i]:.3f})",
+            fontsize=10
+        )
         ax.set_xlabel("Rank of True Parameter")
         ax.set_ylabel("Density")
 
+    for i in range(n_params, len(axes)):
+        axes[i].set_visible(False)
+
     plt.tight_layout()
-    path = output_dir or "."
-    plt.savefig(os.path.join(path, filename), dpi=150, bbox_inches='tight')
+    path = os.path.join(output_dir or ".", filename)
+    plt.savefig(path, dpi=150, bbox_inches="tight")
     plt.close()
-    print(f"  Saved SBC rank histogram to {os.path.join(path, filename)}")
+    print(f"  Saved SBC rank histogram to {path}")

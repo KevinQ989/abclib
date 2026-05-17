@@ -72,7 +72,8 @@ def run_str(sampler, simulator, theta_grid, summary_statistic, credible_mass=0.9
     }
 
 
-def plot_str_results(str_results, output_dir=None, filename="str_results.png"):
+def plot_str_results(str_results, output_dir=None,             
+        filename="str_results.png", parameter_names=None):
     """
     Plot the results of synthetic truth recovery.
 
@@ -84,31 +85,47 @@ def plot_str_results(str_results, output_dir=None, filename="str_results.png"):
         If provided, saves the plot to this directory instead of showing it.
     filename   : str, optional
         The filename to use when saving the plot. Default is "str_results.png".
+    parameter_names : list of str, optional
+        Names of the parameters to use in plot labels. If None, parameters will be labeled by index.
     """
-    n_params = str_results["theta_grid"].shape[1] if str_results["theta_grid"].ndim > 1 else 1
-    fig, axes = plt.subplots(n_params, 1, figsize=(8, 5 * n_params))
-    if n_params == 1:
-        axes = [axes]
+    theta_grid = str_results["theta_grid"]
+    n_params = theta_grid.shape[1] if theta_grid.ndim > 1 else 1
 
-    for j, ax in enumerate(axes):
-        for i, theta_star in enumerate(str_results["theta_grid"][:, j]):
+    if parameter_names is None:
+        parameter_names = [f"Parameter {j}" for j in range(n_params)]
+
+    n_cols = 2
+    n_rows = int(np.ceil(n_params / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(10, 4 * n_rows))
+    axes = np.array(axes).flatten()
+
+    for j in range(n_params):
+        ax = axes[j]
+        for i, theta_star in enumerate(theta_grid[:, j]):
             color = "green" if str_results["covered"][i, j] else "red"
             ax.vlines(
                 theta_star,
-                str_results["lower"][i, j], 
+                str_results["lower"][i, j],
                 str_results["upper"][i, j],
                 color=color, alpha=0.5
             )
             ax.scatter(theta_star, theta_star, color="black", s=10, zorder=5)
         ax.plot([], [], color="green", label="Covered")
         ax.plot([], [], color="red", label="Not covered")
-        ax.set_xlabel(f"True $\\theta_{j}$")
-        ax.set_ylabel(f"Credible interval for $\\theta_{j}$")
-        ax.set_title(f"STR — Parameter {j} | Coverage: {str_results['coverage'][j]:.2f}")
-        ax.legend()
-    
+        ax.set_xlabel(f"True ${parameter_names[j]}$")
+        ax.set_ylabel(f"Credible interval for ${parameter_names[j]}$")
+        ax.set_title(
+            f"STR — {parameter_names[j]} | "
+            f"Coverage: {str_results['coverage'][j]:.2f}",
+            fontsize=10
+        )
+        ax.legend(fontsize=8)
+
+    for j in range(n_params, len(axes)):
+        axes[j].set_visible(False)
+
     plt.tight_layout()
-    path = output_dir or "."
-    plt.savefig(os.path.join(path, filename), dpi=150, bbox_inches='tight')
+    path = os.path.join(output_dir or ".", filename)
+    plt.savefig(path, dpi=150, bbox_inches="tight")
     plt.close()
-    print(f"  Saved STR plot to {os.path.join(path, filename)}")
+    print(f"  Saved STR plot to {path}")

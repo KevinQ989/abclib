@@ -550,7 +550,8 @@ def run_validation(
             sbc,
             n_bins=20,
             output_dir=config.output_dir,
-            filename=f"{prefix}_sbc_rank_histogram_rejection.png"
+            filename=f"{prefix}_sbc_rank_histogram_rejection.png",
+            parameter_names=model.parameter_names
         )
 
     # ------------------------------------------------------------------
@@ -582,7 +583,8 @@ def run_validation(
             sbc_adj,
             n_bins=20,
             output_dir=config.output_dir,
-            filename=f"{prefix}_sbc_rank_histogram_reg_adj.png"
+            filename=f"{prefix}_sbc_rank_histogram_reg_adj.png",
+            parameter_names=model.parameter_names
         )
 
     # ------------------------------------------------------------------
@@ -625,7 +627,8 @@ def run_validation(
         plot_str_results(
             str_result,
             output_dir=config.output_dir,
-            filename=f"{prefix}_str_results.png"
+            filename=f"{prefix}_str_results.png",
+            parameter_names=model.parameter_names
         )
 
     print(f"\n[{model.name}] Validation complete.")
