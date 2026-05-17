@@ -1,6 +1,15 @@
 from .model import MA2
 from ..validation import run_validation
-from ..config import Config, RejectionConfig, SMCConfig, MCMCConfig, SyntheticLikelihoodConfig
+from ..config import (
+    Config,
+    RejectionConfig,
+    SMCConfig,
+    MCMCConfig,
+    SyntheticLikelihoodConfig,
+    SBCConfig,
+    PPCConfig,
+    STRConfig
+)
 import numpy as np
 import scipy.stats as stats
 import os
@@ -74,6 +83,16 @@ def main():
         synthetic_likelihood=SyntheticLikelihoodConfig(
             n_simulations=10_000, M=100, proposal_std=0.1
         ),
+        sbc=SBCConfig(
+            n_trials=500, L=100
+        ),
+        ppc=PPCConfig(
+            n_samples=1000
+        ),
+        str_=STRConfig(
+            n_grid_points=6,
+            credible_mass=0.90
+        )
     )
 
     exact_grid = exact_posterior_grid(model, observed_data, n_grid=200)
