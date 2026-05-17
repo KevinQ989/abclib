@@ -68,7 +68,7 @@ def main():
     observed_data = model.simulator(true_theta)
 
     config = Config(
-        methods = ["rejection_sa", "smc", "mcmc", "synthetic_likelihood"],
+        methods = ["all"],
         n_pilot = 2_000,
         output_dir = OUTPUT_DIR,
         rejection = RejectionConfig(
