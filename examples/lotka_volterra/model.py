@@ -49,6 +49,21 @@ class LotkaVolterra(Model):
 
 
     @property
+    def parameter_names(self):
+        """
+        Names of the model parameters in order.
+
+        Returns
+        -------
+        list of str
+            ["α", "β", "δ", "γ"] corresponding to prey growth
+            rate, predation rate, predator reproduction efficiency, and
+            predator mortality rate respectively.
+        """
+        return ["α", "β", "δ", "γ"]
+
+
+    @property
     def prior_bounds(self):
         """
         Bounds of the uniform prior support for each parameter.

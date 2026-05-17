@@ -111,8 +111,8 @@ class SLResult:
     ----------
     samples           : np.ndarray, shape (n_samples, n_params)
         Parameter vectors sampled from the ABC posterior using synthetic likelihood.
-    likelihoods       : np.ndarray, shape (n_samples,)
-        Estimated synthetic likelihood values for each sample.
+    log_likelihoods       : np.ndarray, shape (n_samples,)
+        Estimated synthetic log likelihood values for each sample.
     n_simulations     : int
         Total number of simulator calls made across all parameter draws and replicates.
     n_accepted        : int
@@ -121,7 +121,7 @@ class SLResult:
         The fitted summary statistic object used during inference.
     """
     samples: np.ndarray
-    likelihoods: np.ndarray
+    log_likelihoods: np.ndarray
     n_simulations: int
     n_accepted: int
     summary_statistic: object

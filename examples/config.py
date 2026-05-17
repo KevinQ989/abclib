@@ -152,7 +152,9 @@ class Config:
     ----------
     methods : list of str
         Additional methods to run beyond the baseline. Valid entries:
-        'rejection_sa', 'smc', 'mcmc', 'synthetic_likelihood'.
+        "rejection_hc", "rejection_sa", "regression_adj", "smc", "mcmc",
+        "synthetic_likelihood", "sbc_rejection", "sbc_adjusted", "ppc", "str".
+        "all" is a shortcut to run all methods.
     n_pilot : int
         Number of pilot simulations for fitting summary statistics.
         Default is 2,000.

@@ -41,17 +41,17 @@ def test_n_simulations_correct(ma2_components):
     assert result.n_simulations == 50 * 20
 
 
-def test_likelihoods_non_negative(ma2_components):
-    """Synthetic likelihoods are Gaussian densities and must be non-negative."""
+def test_log_likelihoods_finite(ma2_components):
+    """Log likelihoods should be finite for a well-initialised chain."""
     prior, simulator, stat, distance = ma2_components
     sl = SyntheticLikelihood(prior, simulator, stat, _prior_pdf, proposal_std=0.1)
     y_obs = simulator(np.array([0.6, 0.2]))
     s_obs = stat.transform(y_obs)
     result = sl.sample(s_obs, n_simulations=50, M=20)
-    assert np.all(result.likelihoods >= 0)
+    assert np.all(np.isfinite(result.log_likelihoods))
 
 
-def test_larger_M_reduces_likelihood_variance(ma2_components):
+def test_larger_M_reduces_log_likelihood_variance(ma2_components):
     """Larger M should produce more stable likelihood estimates."""
     prior, simulator, stat, distance = ma2_components
     sl = SyntheticLikelihood(prior, simulator, stat, _prior_pdf, proposal_std=0.1)
@@ -59,8 +59,8 @@ def test_larger_M_reduces_likelihood_variance(ma2_components):
     y_obs = simulator(theta_fixed)
     s_obs = stat.transform(y_obs)
     repeats = 30
-    liks_small = [sl._likelihood(theta_fixed, M=5, s_obs=s_obs) for _ in range(repeats)]
-    liks_large = [sl._likelihood(theta_fixed, M=100, s_obs=s_obs) for _ in range(repeats)]
+    liks_small = [sl._log_likelihood(theta_fixed, M=5, s_obs=s_obs) for _ in range(repeats)]
+    liks_large = [sl._log_likelihood(theta_fixed, M=100, s_obs=s_obs) for _ in range(repeats)]
     assert np.var(liks_large) < np.var(liks_small)
 
 

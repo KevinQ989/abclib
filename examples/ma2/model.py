@@ -39,6 +39,19 @@ class MA2(Model):
 
 
     @property
+    def parameter_names(self):
+        """
+        Names of the model parameters in order.
+
+        Returns
+        -------
+        list of str
+            ["θ1", "θ2"] corresponding to the two MA coefficients.
+        """
+        return ["θ1", "θ2"]
+
+
+    @property
     def prior_bounds(self):
         """
         Bounds of the prior support for each parameter.
@@ -50,7 +63,7 @@ class MA2(Model):
         Returns
         -------
         list of (float, float)
-            [(-1, 1), (-1, 1)] for theta1 and theta2.
+            [(-1, 1), (-1, 1)] for θ1 and θ2.
         """
         return [(-1, 1), (-1, 1)]
 
@@ -65,7 +78,7 @@ class MA2(Model):
         Returns
         -------
         theta : np.ndarray, shape (2,)
-            Parameter vector [theta1, theta2] satisfying the invertibility
+            Parameter vector [θ1, θ2] satisfying the invertibility
             constraints.
         """
         while True:
@@ -87,7 +100,7 @@ class MA2(Model):
         Parameters
         ----------
         theta : np.ndarray, shape (2,)
-            Parameter vector [theta1, theta2].
+            Parameter vector [θ1, θ2].
 
         Returns
         -------
@@ -130,7 +143,7 @@ class MA2(Model):
         Parameters
         ----------
         theta : np.ndarray, shape (2,)
-            Parameter vector [theta1, theta2].
+            Parameter vector [θ1, θ2].
 
         Returns
         -------
@@ -220,7 +233,7 @@ class MA2(Model):
         Parameters
         ----------
         theta : np.ndarray, shape (2,)
-            Parameter vector [theta1, theta2].
+            Parameter vector [θ1, θ2].
 
         Returns
         -------

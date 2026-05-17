@@ -48,47 +48,47 @@ class SyntheticLikelihood:
         Returns
         -------
         SLResult
-            Contains accepted samples, their synthetic likelihoods, and total simulator calls.
+            Contains accepted samples, their synthetic log likelihoods, and total simulator calls.
         """
         thetas = []
-        likelihoods = []
+        log_likelihoods = []
         n_accepted = 0
 
         theta_current = self.prior()
-        likelihood_current = self._likelihood(theta_current, M, s_obs)
-        while likelihood_current == 0:
+        log_likelihood_current = self._log_likelihood(theta_current, M, s_obs)
+        while log_likelihood_current == -np.inf:
             theta_current = self.prior()
-            likelihood_current = self._likelihood(theta_current, M, s_obs)
+            log_likelihood_current = self._log_likelihood(theta_current, M, s_obs)
         thetas.append(theta_current)
-        likelihoods.append(likelihood_current)
+        log_likelihoods.append(log_likelihood_current)
 
         for _ in range(1, n_simulations):
             theta_proposed = self._propose(theta_current)
-            likelihood_proposed = self._likelihood(theta_proposed, M, s_obs)
+            log_likelihood_proposed = self._log_likelihood(theta_proposed, M, s_obs)
 
             alpha = self._acceptance_probability(
                 theta_current, theta_proposed,
-                likelihood_current, likelihood_proposed
+                log_likelihood_current, log_likelihood_proposed
             )
             if np.random.rand() < alpha:
                 theta_current = theta_proposed
-                likelihood_current = likelihood_proposed
+                log_likelihood_current = log_likelihood_proposed
                 n_accepted += 1
 
             thetas.append(theta_current)
-            likelihoods.append(likelihood_current)
+            log_likelihoods.append(log_likelihood_current)
 
 
         return SLResult(
             samples = np.array(thetas),
-            likelihoods = np.array(likelihoods),
+            log_likelihoods = np.array(log_likelihoods),
             n_simulations = n_simulations * M,
             n_accepted = n_accepted,
             summary_statistic = self.summary_statistic
         )
     
     
-    def _likelihood(self, theta, M, s_obs):
+    def _log_likelihood(self, theta, M, s_obs):
         """
         Estimate the synthetic likelihood at a given parameter vector.
 
@@ -110,12 +110,13 @@ class SyntheticLikelihood:
         if summaries.ndim == 1:
             summaries = summaries[:, np.newaxis]
         if not np.all(np.isfinite(summaries)):
-            return 0.0
+            return -np.inf
         mean_sim = np.mean(summaries, axis=0)
-        cov_sim = np.cov(summaries, rowvar=False) + 1e-6 * np.eye(len(mean_sim))
+        cov_sim = np.cov(summaries, rowvar=False)
+        cov_sim += 1e-6 * np.eye(len(cov_sim))
         if not np.all(np.isfinite(cov_sim)):
-            return 0.0
-        return stats.multivariate_normal.pdf(s_obs, mean=mean_sim, cov=cov_sim)
+            return -np.inf
+        return stats.multivariate_normal.logpdf(s_obs, mean=mean_sim, cov=cov_sim)
 
     
     def _propose(self, theta_current):
@@ -135,7 +136,7 @@ class SyntheticLikelihood:
         return theta_current + np.random.randn(len(theta_current)) * self.proposal_std
 
 
-    def _acceptance_probability(self, theta_current, theta_proposed, likelihood_current, likelihood_proposed):
+    def _acceptance_probability(self, theta_current, theta_proposed, log_likelihood_current, log_likelihood_proposed):
         """
         Compute the acceptance probability for new particles.
 
@@ -145,9 +146,9 @@ class SyntheticLikelihood:
             Current parameter vector in the MCMC chain.
         theta_proposed : np.ndarray, shape (n_params,)
             Proposed parameter vector drawn from the proposal distribution.
-        likelihood_current : float
+        log_likelihood_current : float
             Synthetic likelihood at the current parameter vector.
-        likelihood_proposed : float
+        log_likelihood_proposed : float
             Synthetic likelihood at the proposed parameter vector.
         
         Returns
@@ -155,9 +156,12 @@ class SyntheticLikelihood:
         prob : float
             Acceptance probability for the proposed parameter vector. 0 <= prob <= 1.
         """
-        if likelihood_current == 0:
+        if log_likelihood_current == -np.inf:
             return 1.0
-        return min(1,
-            (self.prior_pdf(theta_proposed) * likelihood_proposed) /
-            (self.prior_pdf(theta_current) * likelihood_current)
+        log_prior_ratio = np.log(
+            self.prior_pdf(theta_proposed) + 1e-300
+        ) - np.log(
+            self.prior_pdf(theta_current) + 1e-300
         )
+        log_alpha = log_likelihood_proposed + log_prior_ratio - log_likelihood_current
+        return float(min(1, np.exp(log_alpha)))

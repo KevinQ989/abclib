@@ -22,6 +22,21 @@ class Model(ABC):
 
     @property
     @abstractmethod
+    def parameter_names(self):
+        """
+        Names of the model parameters in order.
+
+        Returns
+        -------
+        list of str
+            List of parameter names corresponding to the order of values
+            returned by prior sampling and expected by the simulator.
+        """
+        pass
+
+
+    @property
+    @abstractmethod
     def prior_bounds(self):
         """
         Bounds of the prior support for each parameter.
