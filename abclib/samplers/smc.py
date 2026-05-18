@@ -5,7 +5,7 @@ import numpy as np
 
 class SMCABC(BaseSampler):
     """
-    Sequential Monte Carlo ABC sampler.
+    Sequential Monte Carlo (SMC) ABC sampler.
 
     Evolves a population of M particles through successively tighter
     tolerances, concentrating simulation effort near the posterior.

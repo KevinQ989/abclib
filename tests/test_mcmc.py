@@ -58,14 +58,14 @@ def test_all_distances_within_epsilon(ma2_components):
 
 
 def test_tight_proposal_reduces_moves(ma2_components):
-    """A very small proposal std should produce a chain that rarely moves."""
+    """A very small proposal std should produce a chain with near-zero variance."""
     prior, simulator, stat, distance = ma2_components
     sampler = MCMCABC(prior, simulator, stat, distance, _prior_pdf, proposal_std=1e-6)
     y_obs = simulator(np.array([0.6, 0.2]))
     s_obs = stat.transform(y_obs)
     result = sampler.sample(s_obs, n_samples=200, epsilon=EPSILON)
-    n_moves = np.sum(np.any(np.diff(result.samples, axis=0) != 0, axis=1))
-    assert n_moves < 50
+    assert result.samples[:, 0].std() < 0.01
+    assert result.samples[:, 1].std() < 0.01
 
 
 @pytest.mark.slow

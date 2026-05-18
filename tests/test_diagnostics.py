@@ -48,7 +48,7 @@ def test_ppc_extreme_statistic(ma2_components):
     s_obs = stat.transform(y_obs)
     result = sampler.sample(s_obs, n_simulations=2000, q=0.05)
     # constant statistic much larger than any simulation will produce
-    extreme_stat = lambda y: 1e10
+    extreme_stat = lambda y: 1e10 if np.array_equal(y, y_obs) else 0.0
     ppc = run_ppc(result, simulator, y_obs, extreme_stat, n_samples=100)
     assert ppc["p_value"] == 0.0
 

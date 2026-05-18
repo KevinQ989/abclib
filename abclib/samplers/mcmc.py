@@ -4,7 +4,7 @@ import numpy as np
 
 class MCMCABC(BaseSampler):
     """
-    Monte Carlo Markov Chain ABC sampler.
+    Markov Chain Monte Carlo (MCMC) ABC sampler.
 
     Creates a Markov chain with stationary distribution approximating
     the ABC posterior using a Metropolis-Hastings algorithm.
