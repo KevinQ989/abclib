@@ -39,12 +39,6 @@ class SemiAutomaticSummary(BaseSummaryStatistic):
         -------
         self
             Returns the instance to allow method chaining.
-
-        Raises
-        ------
-        ValueError
-            If ``h`` returns inconsistent output lengths across
-            simulations.
         """
         n_pilot, n_params = thetas.shape
         h_values = np.array([self.h(s) for s in simulations])

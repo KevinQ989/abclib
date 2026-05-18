@@ -18,6 +18,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 def main():
+    """Run the full abclib validation pipeline on the Lotka-Volterra model."""
     np.random.seed(0)
     model = LotkaVolterra(T=100)
     true_theta = np.array([0.5, 0.1, 0.1, 0.5])

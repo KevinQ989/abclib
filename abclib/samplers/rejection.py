@@ -4,6 +4,30 @@ from abclib.utils import select_epsilon
 import numpy as np
 
 class RejectionABC(BaseSampler):    
+    """
+    Rejection ABC sampler.
+    
+    Runs a reference table of ``n_simulations`` prior draws, then accepts
+    those whose distance to the observed summary statistics falls below the
+    ``q``-quantile of all distances.
+    
+    Parameters
+    ----------
+    prior             : callable
+        Callable with no arguments returning a single draw from the
+        prior as a 1D ``np.ndarray`` of shape ``(n_params,)``.
+    simulator         : callable
+        Callable accepting a parameter vector and returning simulated
+        data.
+    summary_statistic : BaseSummaryStatistic
+        Fitted summary statistic object exposing a ``transform`` method.
+    distance          : callable
+        Callable of the form ``d(s_obs, s_sim) -> float``.
+    """
+    def __init__(self, prior, simulator, summary_statistic, distance):
+        super().__init__(prior, simulator, summary_statistic, distance)
+    
+
     def sample(self, s_obs, n_simulations, q=0.05, **kwargs):
         """
         Draw samples from the ABC posterior via rejection sampling.

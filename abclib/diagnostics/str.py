@@ -82,7 +82,7 @@ def plot_str_results(str_results, output_dir=None,
     str_results : dict
         Output from the ``run_str`` function containing "theta_grid", "covered", "lower", and "upper".
     output_dir : str, optional
-        If provided, saves the plot to this directory instead of showing it.
+        Saves the plot to this directory if provided. Default is current directory.
     filename   : str, optional
         The filename to use when saving the plot. Default is "str_results.png".
     parameter_names : list of str, optional

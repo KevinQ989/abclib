@@ -114,9 +114,9 @@ def plot_rank_histogram(sbc_result, n_bins=20, output_dir=None,
     n_bins     : int, optional
         Number of bins for the histogram. Default is 20.
     output_dir : str, optional
-        If provided, saves the plot to this directory instead of showing it.
+        Saves the plot to this directory if provided. Default is current directory.
     filename   : str, optional
-        The filename to use when saving the plot. Default is "sbc_rank_histogram.png
+        The filename to use when saving the plot. Default is "sbc_rank_histogram.png".
     parameter_names : list of str, optional
         Names of the parameters to use in plot titles. If None, parameters will be labeled by index.
     """

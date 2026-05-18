@@ -52,12 +52,6 @@ class HandCraftedSummary(BaseSummaryStatistic):
         -------
         self
             Returns the instance to allow method chaining.
-
-        Raises
-        ------
-        ValueError
-            If any summary function returns a non-numeric or inconsistent
-            length output across simulations.
         """
         raw = np.array([self._compute_raw(s) for s in simulations])
         self.scale_ = np.std(raw, axis=0, ddof=1)

@@ -110,7 +110,7 @@ class SLResult:
     Parameters
     ----------
     samples           : np.ndarray, shape (n_samples, n_params)
-        Parameter vectors sampled from the ABC posterior using synthetic likelihood.
+        Accepted parameter vectors forming the synthetic likelihood posterior sample.
     log_likelihoods       : np.ndarray, shape (n_samples,)
         Estimated synthetic log likelihood values for each sample.
     n_simulations     : int
@@ -129,7 +129,7 @@ class SLResult:
  
     @property
     def acceptance_rate(self):
-        """Fraction of MH proposals accepted."""
+        """Fraction of MH proposals accepted, excluding the initial draw."""
         return self.n_accepted / len(self.samples)
 
 

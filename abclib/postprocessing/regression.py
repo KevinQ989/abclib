@@ -103,6 +103,16 @@ class RegressionAdjustment:
         Applies repeated reflection until all values are within bounds.
         For values very far outside the bounds, clips after 10 iterations
         as a fallback.
+
+        Parameters
+        ----------
+        values : np.ndarray, shape (n_samples, n_params)
+            Array of parameter vectors to reflect.
+        
+        Returns
+        -------
+        np.ndarray, shape (n_samples, n_params)
+            Reflected parameter vectors within prior bounds.
         """
         reflected = np.copy(values)
         for j in range(reflected.shape[1]):

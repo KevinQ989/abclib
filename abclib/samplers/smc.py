@@ -181,7 +181,7 @@ class SMCABC(BaseSampler):
         """
         Compute the adaptive Gaussian perturbation bandwidth.
 
-        Follows the rule of \citet{beaumont2009}: for parameter k,
+        Follows Beaumont et al. (2009) for parameter k,
         h_k = 2 * sqrt(weighted variance of theta_k).
 
         Parameters

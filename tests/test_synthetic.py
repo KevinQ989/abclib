@@ -28,7 +28,7 @@ def test_output_shapes(ma2_components):
     s_obs = stat.transform(y_obs)
     result = sl.sample(s_obs, n_simulations=50, M=20)
     assert result.samples.shape == (50, 2)
-    assert result.likelihoods.shape == (50,)
+    assert result.log_likelihoods.shape == (50,)
 
 
 def test_n_simulations_correct(ma2_components):
@@ -66,8 +66,9 @@ def test_larger_M_reduces_log_likelihood_variance(ma2_components):
 
 def test_unfitted_stat_raises():
     """Passing an unfitted summary statistic should raise ValueError."""
-    from examples.ma2.model import prior, simulator, SUMMARY_FUNCTIONS
+    from examples.ma2.model import MA2
     from abclib.statistics.handcrafted import HandCraftedSummary
-    stat = HandCraftedSummary(SUMMARY_FUNCTIONS)
+    model = MA2(T=100)
+    stat = HandCraftedSummary(model.SUMMARY_FUNCTIONS)
     with pytest.raises(ValueError):
-        SyntheticLikelihood(prior, simulator, stat, _prior_pdf, proposal_std=0.1)
+        SyntheticLikelihood(model.prior, model.simulator, stat, _prior_pdf, proposal_std=0.1)

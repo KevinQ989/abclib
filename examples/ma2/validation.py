@@ -62,6 +62,7 @@ def exact_posterior_grid(model, y, n_grid=200):
 
 
 def main():
+    """Run the full abclib validation pipeline on the MA(2) model."""
     np.random.seed(0)
     model = MA2(T=100)
     true_theta = np.array([0.6, 0.2])

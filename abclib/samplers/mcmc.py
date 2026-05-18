@@ -115,7 +115,7 @@ class MCMCABC(BaseSampler):
 
     def _acceptance_probability(self, theta_current, theta_proposed):
         """
-        Compute the acceptance probability for new particles.
+        Compute the acceptance probability for the proposed parameter vector.
 
         Parameters
         ----------

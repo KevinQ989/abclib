@@ -119,7 +119,14 @@ def _resolve_methods(requested: list) -> list:
 
 
 def _print_results(results: dict):
-    """Print a summary table of posterior means, CIs, and acceptance rates."""
+    """
+    Print a summary table of posterior means, CIs, and acceptance rates.
+    
+    Parameters
+    ----------
+    results : dict
+        Mapping of method name to ABCResult or SLResult.
+    """
     header = (
         f"{'Method':<30} {'Mean':>20} {'90% CI Lower':>20} "
         f"{'90% CI Upper':>20} {'Acc. Rate':>12}"

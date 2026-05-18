@@ -19,6 +19,11 @@ class SyntheticLikelihood:
         A fitted summary statistic object exposing a ``transform`` method.
         Must be fitted (via ``fit``) on pilot simulations before being
         passed here.
+    prior_pdf         : callable
+        Callable of the form ``prior_pdf(theta) -> float`` returning the
+        prior density at a given parameter vector.
+    proposal_std      : float
+        Standard deviation of the isotropic Gaussian proposal distribution.
     """
     def __init__(self, prior, simulator, summary_statistic, prior_pdf, proposal_std):
         if not getattr(summary_statistic, "_is_fitted", False):
@@ -104,7 +109,7 @@ class SyntheticLikelihood:
         Returns
         -------
         float
-            Estimated synthetic likelihood value at the given parameter vector.
+            Estimated synthetic log-likelihood value at the given parameter vector.
         """
         summaries = np.array([self.summary_statistic.transform(self.simulator(theta)) for _ in range(M)])
         if summaries.ndim == 1:
@@ -138,7 +143,7 @@ class SyntheticLikelihood:
 
     def _acceptance_probability(self, theta_current, theta_proposed, log_likelihood_current, log_likelihood_proposed):
         """
-        Compute the acceptance probability for new particles.
+        Compute the acceptance probability for the proposed parameter vector.
 
         Parameters
         ----------
@@ -147,9 +152,9 @@ class SyntheticLikelihood:
         theta_proposed : np.ndarray, shape (n_params,)
             Proposed parameter vector drawn from the proposal distribution.
         log_likelihood_current : float
-            Synthetic likelihood at the current parameter vector.
+            Synthetic log-likelihood at the current parameter vector.
         log_likelihood_proposed : float
-            Synthetic likelihood at the proposed parameter vector.
+            Synthetic log-likelihood at the proposed parameter vector.
         
         Returns
         -------

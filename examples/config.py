@@ -144,10 +144,7 @@ class STRConfig:
 class Config:
     """
     Top-level configuration for a validation run.
-
-    The baseline methods (rejection HC and regression adjustment) are
-    always run. Additional methods are controlled by the methods list.
-
+    
     Parameters
     ----------
     methods : list of str

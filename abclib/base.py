@@ -51,7 +51,19 @@ class BaseSampler(ABC):
         pass
 
     def _simulate_and_summarise(self, theta):
-        """Simulate data and compute summary statistics."""
+        """
+        Simulate data and compute summary statistics.
+        
+        Parameters
+        ----------
+        theta : np.ndarray, shape (n_params,)
+            Parameter vector to simulate under.
+        
+        Returns
+        -------
+        np.ndarray, shape (n_statistics,)
+            Summary statistics computed from the simulated data.
+        """
         y_sim = self.simulator(theta)
         s_sim = self.summary_statistic.transform(y_sim)
         return s_sim
