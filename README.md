@@ -1,6 +1,6 @@
 # abclib
 
-A Python library for Approximate Bayesian Computation (ABC). Implements rejection sampling, SMC-ABC, MCMC-ABC, and Synthetic Likelihood, with semi-automatic summary statistics, regression adjustment post-processing, and a full suite of validation diagnostics (SBC, PPC, STR).
+abclib is a from-scratch Python library for likelihood-free Bayesian inference, built as an independent study project extending coursework in simulation and Bayesian statistics. It implements rejection ABC, SMC-ABC, MCMC-ABC, synthetic likelihood, and semi-automatic summary statistics, with a full validation suite (SBC, PPC, STR) applied to an MA(2) model and a stochastic Lotka-Volterra predator-prey system. [Read the full report (PDF)](docs/report.pdf)
 
 ---
 
@@ -235,11 +235,23 @@ Two fully worked examples are provided under `examples/`, each implementing the 
 
 **MA(2)** (`examples/ma2/`) — A second-order moving average model with a tractable exact posterior, used to validate every method before application to the intractable case study. The exact posterior is available in closed form, allowing direct comparison with ABC posteriors.
 
+![MA(2) posterior comparison](docs/figures/ma2_posterior_comparison.png)
+
+*Marginal posteriors from each method on the stochastic Lotka-Volterra model. 
+True parameters marked in red. Rejection ABC (HC and SA) use N=10,000 
+simulations at q=0.05. Regression adjustment is applied to the rejection ABC (HC) result. SMC-ABC uses M=10,000 particles over T=5 stages. MCMC-ABC runs a chain of 10,000 steps at $\varepsilon$=0.05. Synthetic likelihood uses N=10,000 steps with M=100 replicates per step.*
+
 ```bash
 python -m examples.ma2.validation
 ```
 
 **Lotka-Volterra** (`examples/lotka_volterra/`) — A stochastic predator-prey model with lognormal observation noise layered over Euler-Maruyama ODE dynamics. The likelihood is doubly intractable: the stochastic transition density has no closed form, and the observation noise requires integrating over the latent trajectory.
+
+![Lotka-Volterra posterior comparison](docs/figures/lotka-volterra_posterior_comparison.png)
+
+*Marginal posteriors from each method on the stochastic Lotka-Volterra model. 
+True parameters marked in red. Rejection ABC (HC and SA) use N=10,000 
+simulations at q=0.05. Regression adjustment is applied to the rejection ABC (HC) result. SMC-ABC uses M=10,000 particles over T=5 stages. MCMC-ABC runs a chain of 10,000 steps at $\varepsilon$=1.0. Synthetic likelihood uses N=2,000 steps with M=200 replicates per step.*
 
 ```bash
 python -m examples.lotka_volterra.validation
